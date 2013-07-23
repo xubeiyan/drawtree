@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>
+		Recursive Canvas Tree
+	</title>
+	<script type="text/javascript" src="js/jquery-1.10.1.js"></script>
+	<script>
+		var drawTree = function (ctx, startX, startY, length, angle, depth, branchWidth) {
+			var rand = Math.random,
+				newLength, newAngle, newDepth, maxBranch = 3,
+				endX, endY, maxAngle = 2 * Math.PI / 4,
+				subBranches, lenShrink;
+			
+			ctx.beginPath();
+			ctx.moveTo(startX, startY);
+			endX = startX + length * Math.cos(angle);
+			endY = startY + length * Math.sin(angle);
+			ctx.lineCap = 'round';
+			ctx.lineWidth = branchWidth;
+			ctx.lineTo(endX, endY);
+			// 如果比较靠近枝头的话，改变颜色使其看起来像树叶
+			if (depth <= 2) {
+				ctx.strokeStyle = 'rgb(0, ' + (((rand() * 64) + 128) >> 0) + ',0)';
+			}
+			else {
+				ctx.strokeStyle = 'rgb(' + (((rand() * 64) + 64) >> 0) + ',50,25)';
+			}
+			ctx.stroke();
+			
+			newDepth = depth - 1;
+			
+			if (!newDepth) {
+				return;
+			}
+			subBranches = (rand() * (maxBranch - 1)) + 1;
+			branchWidth *= 0.7;
+			for (var i = 0; i < subBranches; i++) {
+				newAngle = angle + rand() * maxAngle - maxAngle * 0.5;
+				newLength = length * (0.7 + rand() * 0.3);
+				drawTree(ctx, endX, endY, newLength, newAngle, newDepth, branchWidth);
+			}
+		};
+		$(document).ready(function () {
+			var canvas = $("#myCanvas")[0],
+				ctx = canvas.getContext('2d');
+			drawTree(ctx, 400, 590, 60, -Math.PI / 2, 12, 12);//倒数第二个参数（深度）不推荐超过15，不然要卡很久
+		});
+	</script>
+	</head>
+	<body>
+		<canvas id='myCanvas' width=800px height=600px></canvas>
+		<-这是一棵递归树
+	</body>
+</html>
